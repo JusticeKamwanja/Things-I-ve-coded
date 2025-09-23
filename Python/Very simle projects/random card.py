@@ -1,9 +1,8 @@
-from inspect import getcallargs
 from random import choice
 
 suits = ['Diamonds', 'Spades', 'Hearts', 'Clubs']
 
-values = ['King', 'Queen', 'Jack'] + list(range(10, 1, -1)) +['Ace']
+values = ['King', 'Queen', 'Jack'] + list(range(10, 1, -1)) + ['Ace']
 
 
 def get_card():
