@@ -16,6 +16,7 @@ def sing(lyrics, continuous_lyrics, is_new_line=True): # Unless specified, the t
 
     intro = '--------SONG LYRICS--------\n\n'
     intro +="Press 'Enter' to start. \n"
+    continuous_lyrics = [lyrics.index(i) for i in lyrics if len(i) > 1 and i[-1] == 'False']
     
     input(intro)
     
@@ -71,6 +72,5 @@ lyrics = [
     ['akiniambia siambiliki',  0.07, 0.01,  'False'],
 ]
 
-continuous_lyrics = [lyrics.index(i) for i in lyrics if len(i) > 1 and i[-1] == 'False']
 
-sing(lyrics, continuous_lyrics)
+sing(lyrics)
