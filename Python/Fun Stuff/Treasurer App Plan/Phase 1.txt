@@ -1,0 +1,31 @@
+  PROJECT PLAN
+The treasurer app conists of three main stages:
+1. Input and Reading
+2. Processing and Extraction
+3. Output and Drafting
+Phase 1: Basic app execution plan (Using basic python)
+
+This focuses on building a minimal viable product (MVP) using core Python features like file handling and string manipulation.
+    Step1: Input and Reading
+        -Data Source: Messages are read from a simple text file, (mpesa_log.txt) where the user pastes one or more full M-Pesa messgaes.
+        
+        -The script uses with open(...) as f:
+        and .readlines() to access the data line by line.
+
+    Step 2: Processing and Extraction. (Core Logic)
+        -Idetification: Uses 'if\else' and the 'in' operator To check if the message is a 'received money' transaction by checking for key phrases (e.g., "received").
+        -.set() method will be used to remove any duplicate messages.
+        
+        -Data Extraction:
+            *Amount: Uses string slicing based on the currency symbol (Ksh) to isolate the monetary value.
+            
+            *Name: Uses string slicing between fixed key words like 'from' using the .strip() method to clean up extra spaces.
+
+        -Data Storage: Extracted data is stored in a master list of dictionaries, where each dictionary hols the sender and amount.
+
+    Step 3: Output and Drafting:
+        -Dictionary Output: The master list is printed, displaying all extracted key-value pairs.
+
+        -Message Drafting: A seperate loop calculates the total amount and comples a comma seprated list of all sender names.
+
+        -Final print: The script uses an f-string to display a friendly summary message containing the total amount and the list of senders.

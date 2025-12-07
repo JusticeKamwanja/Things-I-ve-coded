@@ -1,5 +1,4 @@
 from tkinter import StringVar
-from turtle import bgcolor
 import customtkinter as ctk
 from random import choice
 from time import sleep
@@ -12,20 +11,50 @@ class App(ctk.CTk):
         # The root window.
         self.title(' ' * 50 + 'Number Guessing Game')
         self.geometry('500x600+450+50')
-        self.bgColour = "#FCBCBC"
+        self.bgColour = "#11B65B"
         self.config(background=self.bgColour)
         self.resizable(False, False)
         
         # The game attributes.
         self.changingText = StringVar(value='Pick A Number')
-        self.randomNumber = choice(range(101))
-        # self.randomNumber =   # This
+        self.maxLimit = 1
         self.attempts = 0
         self.attemptsStatement = StringVar(value=f'Attempts: {self.attempts}')
         self.font = 'Comic Sans MS'
         
         # Run the game
         self.addHomePage()
+        
+    def pickLevel(self,  level):
+        '''This function will decide the levels.
+        It picks the level attributes, thenlaunches the game page.'''
+        
+        if level.lower == 'quick play':
+            self.maxLimit = 50
+            self.bgColour = "#FFEB33"
+            self.config(background=self.bgColour)
+            
+        if level.lower == 'one':
+            self.maxLimit = 100
+            self.bgColour = "#33F1FF"
+            self.config(background=self.bgColour)
+
+        if level.lower == 'two':
+            self.maxLimit = 150
+            self.bgColour = "#33FF3D"
+            self.config(background=self.bgColour)
+
+        if level.lower == 'three':
+            self.maxLimit = 200
+            self.bgColour = "#3352FF"
+            self.config(background=self.bgColour)
+
+        if level.lower == 'four':
+            self.maxLimit = 250
+            self.bgColour = "#FF33F5"
+            self.config(background=self.bgColour)
+        
+        self.addGamePage()
         
     # A function to remove widgets.
     def takeAway(self, *widgets):
@@ -35,10 +64,17 @@ class App(ctk.CTk):
     # A few functions to handle the pages.
     def addHomePage(self):
         '''A function to load the homepage.'''
-        self.bgColour = "#7BE3F0"
-        self.config(background=self.bgColour)
+        # Reset the random number and the number of attempts.
+        self.attempts = 0
+        self.randomNumber = choice(range(int(self.maxLimit) + 1))
+        
+        for widget in self.winfo_children():
+            self.takeAway(widget)
         self.addLabel('nUMBER \n' + ' ' * 11 + 'gUESSER', 'Anurati', 60, 0, 0, 2, "#000000", method='grid')
-        self.addButton('Quick Play', self.quickPlay, 0, 1, method='grid')
+        # The quick play button
+        self.addButton('Quick Play', self.pickLevel('quck play'), 0, 1, method='grid')
+
+        # The 'levels' button.
         self.addButton('Levels', self.showLevels, 1, 2, method='grid')
     
     def addGamePage(self):
@@ -55,7 +91,12 @@ class App(ctk.CTk):
         
     def loadWinningPage(self):
         '''A function to load the winning page.'''
+        # Remove the unnecessary widgets for the winning page.
         self.takeAway(self.entry, self.button)
+        self.addButton('Play Again', self.addHomePage)
+    
+    def finalButton(self):
+        pass
     
     # A few functions to add the widgets.
     def addLabel(self, text, font_type, font_size, column=0, row=0, columnspan=0, colour='white', method='pack'):
@@ -65,7 +106,7 @@ class App(ctk.CTk):
         elif method == 'grid':
             self.changingLabel.grid(column=column, row=row, columnspan=columnspan, pady=10)
             
-    def addButton(self, message, command, column=0, row=0,method='pack'):
+    def addButton(self, message, command, column=0, row=0, method='pack'):
         self.button = ctk.CTkButton(self, text=message, font=('Bauhaus 93', 30), command=command, bg_color=self.bgColour)
         if method == 'pack':
             self.button.pack(pady=20)
@@ -90,12 +131,11 @@ class App(ctk.CTk):
         levels = ['One', 'Two', 'Three', 'Four']
         columns = [0, 1] * 2
         rows = [3, 4, 5, 6]
-        bgColours = ["#E5FF00","#FFA600", "#009721", "#FF00D4"]
         
         for level, column, row in zip(levels, columns, rows):
             
             # Add four buttons.
-            self.addButton(f'Level {level}', self.addGamePage, column, row, method='grid')
+            self.addButton(f'Level {level}', self.pickLevel(f'{level}'), column, row, method='grid')
         
     def guess(self):
         '''Access the content of the entry box.'''
