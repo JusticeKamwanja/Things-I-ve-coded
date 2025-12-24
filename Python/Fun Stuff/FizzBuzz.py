@@ -1,5 +1,5 @@
 def fizzbuzz():
-    for number in range(1, 201):
+    for number in range(1, 100):
         # number is divisible by 3 and 5.
         if number % 3 == 0 and number % 5 == 0:
             output = 'FizzBuzz'

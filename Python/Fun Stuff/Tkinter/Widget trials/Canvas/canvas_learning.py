@@ -22,7 +22,7 @@ canvas.create_line(50, 50, 150, 100)
 # Respondding to mouse clicks.
 def on_click(event):
     x, y = event.x, event.y
-    canvas.create_oval(x, y, 20, fill='red')
+    canvas.create_oval(x+15, y+10, x-15, y-10, fill='yellow')
     
 
 canvas.bind('<Button-1>', on_click)

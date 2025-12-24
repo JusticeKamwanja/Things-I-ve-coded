@@ -1,0 +1,10 @@
+Build a web app 'called Learning Log'
+    - Allows users to log the topics they are interested in and make journal entries.
+
+Learning Log home page:
+    - Describes the site and invites users to log in.
+
+When logged in, the user can:
+    - Create new topics
+    - Add new entries.
+    - Read/edit existing entries.

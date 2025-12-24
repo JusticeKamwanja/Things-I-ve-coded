@@ -1,7 +1,6 @@
 greeting = 'Hello There man.'
 text = 'Jambo.'
 
-
 print(id('Jambo'))
 print(id('Hello There Man'))
 
