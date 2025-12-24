@@ -10,7 +10,7 @@ def type(text, typing_speed):
             sys.stdout.flush()
             time.sleep(typing_speed) # Controls how fast the letters appear.
 
-def sing(lyrics, continuous_lyrics, is_new_line=True): # Unless specified, the typing speed will be 0.08 sec.
+def sing(lyrics, is_new_line=True): # Unless specified, the typing speed will be 0.08 sec.
     '''Types text character by character.'''
     lines_printed = 1
 
