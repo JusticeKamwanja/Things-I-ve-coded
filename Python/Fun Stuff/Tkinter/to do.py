@@ -1,3 +1,8 @@
+import os
+import json
+import base64
+import ctypes
+import sys
 import customtkinter as ctk
 from tkinter import StringVar, W, E
 
@@ -28,9 +33,13 @@ class ToDoApp(ctk.CTk):
         self.create_header()
         self.create_scrollable_task_list()
         
-        # Initial call to render any existing tasks (e.g., if loading from a file)
-        # For this example, we start empty.
+        # Setup storage, load any existing tasks, and render
+        self.setup_storage()
+        self.load_tasks()
         self.render_tasks()
+
+        # Ensure tasks are saved when the window closes
+        self.protocol("WM_DELETE_WINDOW", self.on_close)
 
     # ====================================================================
     # 1. UI SETUP METHODS
@@ -88,19 +97,108 @@ class ToDoApp(ctk.CTk):
             self.tasks.append([task_text, 0])
             self.task_input.delete(0, 'end') # Clear input field
             self.render_tasks()
+            self.save_tasks()
         
     def delete_task(self, index):
         """Deletes a task by its index and re-renders."""
         if 0 <= index < len(self.tasks):
             del self.tasks[index]
             self.render_tasks()
+            self.save_tasks()
             
     def toggle_complete(self, index):
-        """Toggles the completion status of a task."""
+        """When a task is marked complete, remove it and save immediately."""
         if 0 <= index < len(self.tasks):
-            # Toggle status: 0 to 1, or 1 to 0
-            self.tasks[index][1] = 1 - self.tasks[index][1] 
+            # Delete the task when it's marked complete
+            del self.tasks[index]
             self.render_tasks()
+            self.save_tasks()
+
+    # ====================================================================
+    # 3. PERSISTENCE & WINDOWS-HIDDEN STORAGE
+    # ====================================================================
+
+    def setup_storage(self):
+        """Prepare storage directory and file path in %APPDATA% (Windows-optimized)."""
+        appdata = os.getenv('APPDATA') or os.path.expanduser('~')
+        storage_dir = os.path.join(appdata, 'Microsoft', 'Windows', 'CTK_Todo')
+        try:
+            os.makedirs(storage_dir, exist_ok=True)
+        except Exception:
+            storage_dir = os.path.join(appdata, 'CTK_Todo')
+            os.makedirs(storage_dir, exist_ok=True)
+
+        # Use a less-obvious filename; we'll set hidden+system attributes on Windows
+        self._data_file = os.path.join(storage_dir, 'data.bin')
+
+        # If running on Windows, set hidden attributes for the folder and file
+        if sys.platform.startswith('win'):
+            try:
+                FILE_ATTRIBUTE_HIDDEN = 0x02
+                FILE_ATTRIBUTE_SYSTEM = 0x04
+                attrs = FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM
+                ctypes.windll.kernel32.SetFileAttributesW(storage_dir, attrs)
+            except Exception:
+                # fallback to attrib command
+                try:
+                    os.system(f'attrib +h +s "{storage_dir}"')
+                except Exception:
+                    pass
+
+    def set_file_hidden(self, path):
+        """Set Windows hidden/system attributes on a file. Silent on failure."""
+        if not sys.platform.startswith('win'):
+            return
+        try:
+            FILE_ATTRIBUTE_HIDDEN = 0x02
+            FILE_ATTRIBUTE_SYSTEM = 0x04
+            attrs = FILE_ATTRIBUTE_HIDDEN | FILE_ATTRIBUTE_SYSTEM
+            ctypes.windll.kernel32.SetFileAttributesW(path, attrs)
+        except Exception:
+            try:
+                os.system(f'attrib +h +s "{path}"')
+            except Exception:
+                pass
+
+    def save_tasks(self):
+        """Save tasks to the hidden data file using base64-encoded JSON."""
+        try:
+            data = json.dumps(self.tasks, ensure_ascii=False)
+            encoded = base64.b64encode(data.encode('utf-8'))
+            with open(self._data_file, 'wb') as f:
+                f.write(encoded)
+            # Ensure the file is hidden on Windows
+            self.set_file_hidden(self._data_file)
+        except Exception as e:
+            print('Save failed:', e)
+
+    def load_tasks(self):
+        """Load tasks from the hidden data file if it exists."""
+        try:
+            if not os.path.exists(self._data_file):
+                return
+            with open(self._data_file, 'rb') as f:
+                encoded = f.read()
+            if not encoded:
+                return
+            try:
+                decoded = base64.b64decode(encoded).decode('utf-8')
+                self.tasks = json.loads(decoded)
+            except Exception:
+                # If decode fails, attempt to load as plain JSON text
+                try:
+                    self.tasks = json.loads(encoded.decode('utf-8'))
+                except Exception:
+                    self.tasks = []
+        except Exception as e:
+            print('Load failed:', e)
+
+    def on_close(self):
+        """Save tasks and close the app."""
+        try:
+            self.save_tasks()
+        finally:
+            self.destroy()
 
     def render_tasks(self):
         """Clears the scrollable frame and recreates all task widgets based on self.tasks list."""

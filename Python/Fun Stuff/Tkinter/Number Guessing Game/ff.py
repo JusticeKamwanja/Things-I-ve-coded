@@ -1,4 +1,4 @@
-from tkinter import StringVar
+from tkinter import StringVar, font
 import customtkinter as ctk
 from random import choice
 
@@ -9,7 +9,7 @@ class App(ctk.CTk):
 
         # --- Root Window Setup ---
         self.title(' ' * 50 + 'Number Guessing Game')
-        self.geometry('500x600+450+50')
+        self.geometry('1200x600+80+50')
         self.initial_bg_colour = "#11B65B" # Defined a consistent initial colour
         self.config(background=self.initial_bg_colour)
         self.resizable(False, False)
@@ -43,7 +43,7 @@ class App(ctk.CTk):
         self.changingText.set('Pick A Number')
 
         # Home Page Widgets
-        self.addLabel('nUMBER \n' + ' ' * 11 + 'gUESSER', 'Anurati', 60, colour="#000000", method='pack')
+        self.addLabel('\nnUMBER \n' + ' ' * 11 + 'gUESSER', 'Anurati', 60, colour="#000000", method='pack')
         
         # Use pack for simplicity on homepage
         self.addButton('Quick Play (0-50)', lambda: self.pickLevel(50), method='pack')
@@ -65,14 +65,16 @@ class App(ctk.CTk):
         # Use grid for structured layout
         for index, (label, limit) in enumerate(levels):
             if label == 'Back':
-                self.addButton(label, limit, 0, index + 1, method='grid') # 'limit' is the function here
+                self.addButton(label, limit, 0, index + 1, method='pack') # 'limit' is the function here
+            
+            # For the level buttons.
             else:
-                self.addButton(label, lambda l=limit: self.pickLevel(l), 0, index, method='grid')
+                self.addButton(label, lambda l=limit: self.pickLevel(l), 0, index, method='pack')
 
     def pickLevel(self, level):
         '''Decide the level attributes and launch the game page.'''
         self.maxLimit = level  # Set maxLimit
-        self.randomNumber = choice(range(self.maxLimit + 1))  # Generate the random number 
+        self.randomNumber = choice(range(self.maxLimit + 1))  # Generate the random number .
         self.addGamePage()
 
     def addGamePage(self):
@@ -81,7 +83,7 @@ class App(ctk.CTk):
         self.game_bg_colour = "#FCBCBC" # Defined a consistent game colour
         self.config(background=self.game_bg_colour)
         
-        self.addChangingLabel(self.changingText, 60, "#202109", 50)
+        self.addChangingLabel(self.changingText, 30, "#202109", 50)
         self.addEntryBox()
         self.addChangingLabel(self.attemptsStatement, 30, "#0A4207", 5)
         # Store guess button and entry box to easily destroy them later
@@ -119,7 +121,7 @@ class App(ctk.CTk):
 
     def addEntryBox(self):
         # Stored as attribute because it needs to be accessed for self.entry.get() and destruction
-        self.entry = ctk.CTkEntry(self, width=300, height=60, font=(self.font, 40), bg_color='transparent', fg_color="#E988C7", text_color='#000000')
+        self.entry = ctk.CTkEntry(self, width=300, height=60, font=(self.font, 30), bg_color='transparent', fg_color="#E988C7", text_color='#000000')
         self.entry.pack(pady=20)
         # Add binding to allow pressing Enter to submit
         self.entry.bind('<Return>', lambda event: self.guess()) 
@@ -154,15 +156,15 @@ class App(ctk.CTk):
         
         # Check if the guess is within the limit (good user feedback)
         if number < 0 or number > self.maxLimit:
-            feedback = f'Pick a number between 0 and {self.maxLimit}'
+            feedback = f'Pick from 0 - {self.maxLimit}'
         elif number > self.randomNumber:
             feedback = 'Too High'
         elif number < self.randomNumber:
             feedback = 'Too Low'
         else:
-            feedback = f'YOU WON!!! It took you {self.attempts} attempts.'
+            feedback = f'YOU WON!!! \nYou took {self.attempts} attempts.'
             self.changingText.set(feedback)
-            self.attemptsStatement.set(f'Total Attempts: {self.attempts}')
+            self.attemptsStatement.set('')
             self.loadWinningPage()
             return # Exit function after win
 
