@@ -69,10 +69,10 @@ class PHScale(ctk.CTk):
         self.value_label.grid(pady=10, row=1, column=0, columnspan=2)
 
         # Create buttons inside the centered content frame
-        self.decrease_button = ctk.CTkButton(self.content_frame, width=140, height=28, text='Decrease pH', command=lambda: self.change_ph(-1))
+        self.decrease_button = ctk.CTkButton(self.content_frame, width=140, height=28, text='Decrease pH', text_color_disabled="#EEFF00", command=lambda: self.change_ph(-1))
         self.decrease_button.grid(row=1, column=0, padx=20, pady=25)
 
-        self.increase_button = ctk.CTkButton(self.content_frame, width=140, height=28, text='Increase pH', command=lambda: self.change_ph(1))
+        self.increase_button = ctk.CTkButton(self.content_frame, width=140, height=28, text='Increase pH', text_color_disabled="#EEFF00", command=lambda: self.change_ph(1))
         self.increase_button.grid(row=1, column=1, padx=20, pady=25)
         self.update_buttons()
 
